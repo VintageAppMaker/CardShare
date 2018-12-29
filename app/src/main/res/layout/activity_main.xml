@@ -1,0 +1,92 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#777777"
+>
+
+    <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" >
+
+        <TextView
+                android:id="@+id/textView3"
+                android:layout_width="26dp"
+                android:layout_height="fill_parent"
+                android:background="#333333" />
+
+        <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="vertical" >
+
+            <TextView
+                    android:id="@+id/textView1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="6dp"
+                    android:layout_marginTop="10dp"
+                    android:text=" 카드를 받아줘"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="#EEEEEE" />
+
+            <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="fill_parent"
+                    android:layout_height="2dp"
+                    android:background="#333333"
+                    android:text="TextView" />
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+
+                <Button
+                        android:id="@+id/btnShare"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.3"
+                        android:alpha="0.5"
+                        android:text="공유" />
+
+                <Button
+                        android:id="@+id/btnClear"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.3"
+                        android:alpha="0.5"
+                        android:text="지우기" />
+
+                <Button
+                        android:id="@+id/btnImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.3"
+                        android:alpha="0.5"
+                        android:text="배경" />
+            </LinearLayout>
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal" >
+
+                <EditText
+                        android:id="@+id/editText1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1"
+                        android:alpha="0.5"
+                        android:background="@drawable/game"
+                        android:ems="10"
+                        android:gravity="top"
+                        android:inputType="textMultiLine"
+                        android:textColor="#FFFFFF" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>
