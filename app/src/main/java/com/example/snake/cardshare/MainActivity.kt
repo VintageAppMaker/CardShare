@@ -153,10 +153,6 @@ class MainActivity : AppCompatActivity() {
         intent.action = Intent.ACTION_SEND
         intent.type = "image/*"
 
-        // 추가정보를 저장한다.
-        //intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "")
-        //intent.putExtra(android.content.Intent.EXTRA_TEXT, "")
-
         // 파일정보를 저장한다.
         intent.putExtra(Intent.EXTRA_STREAM, uri)
 
