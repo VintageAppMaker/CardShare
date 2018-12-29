@@ -3,7 +3,6 @@ package com.example.snake.cardshare
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Window
-
 import android.Manifest
 import android.app.AlertDialog
 import android.content.Intent
@@ -22,6 +21,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // 타이틀을 숨긴다.
         setHideTitle()
         setContentView(R.layout.activity_main)
 
@@ -33,8 +33,7 @@ class MainActivity : AppCompatActivity() {
         btnShare.setOnClickListener{
             // EditText의 화면을 File로 저장하고
             // 저장된 파일을 공유한다.
-            val f = SaveImage()
-            ShareImage(f)
+            SaveImage()?.let{ ShareImage(it) }
         }
 
         // 버튼을 가져오고. click 핸들러를 구현한다.
@@ -59,42 +58,39 @@ class MainActivity : AppCompatActivity() {
     private fun grantExternalStoragePermission(): Boolean {
 
         // 마시멜로우 버전 이상...
-        if (Build.VERSION.SDK_INT >= 23) {
-
+        return if (Build.VERSION.SDK_INT >= 23) {
             if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                return true
+                true
             } else {
                 // 퍼미션이 허락되어있지 않다면 허락을 요청하는 창을 띄운다
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1)
-                return false
+                false
             }
-
         } else {
-            return true
+            true
         }
-
     }
 
     // 2. EditText의 화면을 File로 저장하는 메소드 구현
     fun SaveImage(): File {
 
-        // EditText를 가져와 et에 저장한다.
-        val et = editText1
+        val b : Bitmap
+        editText1.apply {
+            // Android에서 반드시하라고 하는 규격임. EditText의 이미지를 가져가려면
+            // 아래 2개의 메소드를 실행하며 true 값을 넘겨주어야 함.
+            isDrawingCacheEnabled = true
+            buildDrawingCache(true)
 
-        // Android에서 반드시하라고 하는 규격임. EditText의 이미지를 가져가려면
-        // 아래 2개의 메소드를 실행하며 true 값을 넘겨주어야 함.
-        et.isDrawingCacheEnabled = true
-        et.buildDrawingCache(true)
+            // et(EditText)의 메소드인 getDrawingCache()를 호출하고 그 결과값을
+            // Bitmap 클래스의 createBitmap()을 호출한다.
+            // 결과값은 Bitmap 객체이다.
+            b = Bitmap.createBitmap(drawingCache)
 
-        // et(EditText)의 메소드인 getDrawingCache()를 호출하고 그 결과값을
-        // Bitmap 클래스의 createBitmap()을 호출한다.
-        // 결과값은 Bitmap 객체이다.
-        val b = Bitmap.createBitmap(et.drawingCache)
-
-        // Bitmap 객체 b를 얻었으므로 bt의 화면메모리를 다시 닫아야 한다.
-        // 아래의 코드는 반드시 실행되어야 한다.
-        et.isDrawingCacheEnabled = false
-        et.buildDrawingCache(false)
+            // Bitmap 객체 b를 얻었으므로 bt의 화면메모리를 다시 닫아야 한다.
+            // 아래의 코드는 반드시 실행되어야 한다.
+            isDrawingCacheEnabled = false
+            buildDrawingCache(false)
+        }
 
         // 경로명을 만든다.
         val file_path = Environment.getExternalStorageDirectory().absolutePath + "/campandroid"
@@ -108,21 +104,13 @@ class MainActivity : AppCompatActivity() {
 
         // 경로명에 포함된 test.png이라는 이름의 파일을 생성
         val file = File(dir, "test.png")
-
-        // 파일쓰기위한 fOut 객체
-        val fOut: FileOutputStream
-        try {
-
-            // 객체생성
-            fOut = FileOutputStream(file)
+        FileOutputStream(file).apply{
             // Bitmap을 압축 png 85%로 ...
-            b.compress(Bitmap.CompressFormat.PNG, 85, fOut)
+            b.compress(Bitmap.CompressFormat.PNG, 85, this)
             // 파일쓰기
-            fOut.flush()
+            flush()
             // 파일닫기
-            fOut.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
+            close()
         }
 
         // 파일을 넘겨준다.
@@ -140,12 +128,9 @@ class MainActivity : AppCompatActivity() {
         builder.setTitle("배경설정")
             // item의 값을 넣고 리스트로 보여주며 선택 시, 행동을 지정
             .setItems(items) { dialog, index ->
-                // click이 되었을 경우,
-                // EditText를 가져온다.
-                val et = editText1
                 // 선택된 리스트 번호에 맞는 Images 배열내의 이미지 ID 값을 가져온다.
                 // 그리고 setBackgroundResource로 EditText인 et의 배경을 바꾼다.
-                et.setBackgroundResource(Images[index])
+                editText1.setBackgroundResource(Images[index])
 
                 // Dialog를 종료한다.
                 dialog.dismiss()
@@ -169,8 +154,8 @@ class MainActivity : AppCompatActivity() {
         intent.type = "image/*"
 
         // 추가정보를 저장한다.
-        intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "")
-        intent.putExtra(android.content.Intent.EXTRA_TEXT, "")
+        //intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "")
+        //intent.putExtra(android.content.Intent.EXTRA_TEXT, "")
 
         // 파일정보를 저장한다.
         intent.putExtra(Intent.EXTRA_STREAM, uri)
@@ -182,24 +167,16 @@ class MainActivity : AppCompatActivity() {
 
     // 5. EditText의 글자와 배경이미지를 지운다.
     fun DeleteTextAndImageFile() {
-
         // 경로명 설정
         val file_path = Environment.getExternalStorageDirectory().absolutePath + "/campandroid"
         val dir = File(file_path)
 
         // 경로명 + 파일명
-        val file = File(dir, "test.png")
-
-        try {
-            // 지우기 <-- Error가 발생할 수 있으므로 try catch안에 코딩해야 한다.
-            file.delete()
-        } catch (e: Exception) {
-
-        }
+        File(dir, "test.png")?.apply { delete() }
 
         // EditText의 문자를 지운다.
-        val et = editText1
-        et.setText("")
+        editText1.setText("")
+
     }
 
     /*
